@@ -144,7 +144,8 @@ leslie_O3.out:
 	xalancbmk_O3.test lynx.test sphinx3_O0.test sphinx3_O3.test bwaves_O0.test bwaves_O3.test \
 	zeusmp_O0.test zeusmp_O3.test leslie_O0.test leslie_O3.test soplex_O0.test soplex_O3.test
 
-SUBTESTS1 := bzip2_O0.test lbm_O0.test mcf_O0.test h264ref_O0.test libquantum_O0.test cactusADM_O0.test gromacs_O0.test namd_O.test0 soplex_O0.test leslie_O0.test
+#SUBTESTS1 := bzip2_O0.test lbm_O0.test mcf_O0.test h264ref_O0.test libquantum_O0.test cactusADM_O0.test gromacs_O0.test namd_O.test0 soplex_O0.test leslie_O0.test
+SUBTESTS1 :=  namd_O0.test soplex_O0.test leslie_O0.test
 
 all_test: $(SUBTESTS1)
 
@@ -163,7 +164,6 @@ mcf_O3.test:
 	@cd mcf_O3; ./test.log; cd ../; done
 sjeng_O0.test: 
 	@cd sjeng_O0; ./test.log; cd ../; done
-	@./clean.sh sjeng_O0
 sjeng_O3.test: 
 	@cd sjeng_O3; ./test.log; cd ../; done
 h264ref_O0.test:
