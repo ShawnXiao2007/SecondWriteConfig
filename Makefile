@@ -169,13 +169,11 @@ sjeng_O3.test:
 h264ref_O0.test:
 	echo h264ref_O0.test
 	@cd h264ref_O0; ./test.log; cd ../; done
-	@./clean.sh h264ref_O0
 h264ref_O3.test: 
 	@cd h264ref_O3; ./test.log; cd ../; done
 libquantum_O0.test: 
 	echo libquantum_O0.test
 	@cd libquantum_O0; ./test.log; cd ../; done
-	@./clean.sh libquantum_O0
 libquantum_O3.test: 
 	@cd libquantum_O3; ./test.log; cd ../; done
 bzip2_O0.test: 
@@ -195,7 +193,6 @@ gcc_O3.test:
 cactusADM_O0.test:
 	echo cactusADM_O0.test
 	@cd cactusADM_O0; ./test.log; cd ../; done
-	@./clean.sh cactusADM_O0
 cactusADM_O3.test: 
 	@cd cactusADM_O3; ./test.log; cd ../; done
 omnetpp_O0.test: 
@@ -206,7 +203,6 @@ omnetpp_O3.test:
 gromacs_O0.test:
 	echo gromacs_O0.test
 	@cd gromacs_O0; ./test.log; cd ../; done
-	@./clean.sh gromacs_O0
 gromacs_O3.test: 
 	@cd gromacs_O3; ./test.log; cd ../; done
 calculix_O0.test: 
@@ -222,7 +218,6 @@ dealII_O3.test:
 namd_O0.test:
 	echo namd_O0.test
 	@cd namd_O0; ./test.log; cd ../; done
-	@./clean.sh namd_O0
 namd_O3.test: 
 	@cd namd_O3; ./test.log; cd ../; done
 tonto_O3.test: 
