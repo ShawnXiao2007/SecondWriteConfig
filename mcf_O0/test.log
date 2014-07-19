@@ -1,0 +1,10 @@
+
+time ../original_binaries/mcf_O0 ../CPU2006/429.mcf/data/test/input/inp.in > log_in 
+time ../output_binaries/mcf_O0.out ../CPU2006/429.mcf/data/test/input/inp.in > log_out
+if diff log_in log_out >/dev/null 2>&1
+then 
+	printf "MCF_O0 \t \t Success \n "
+else
+	printf "MCF_O0 \t \t Failed \n "
+fi
+rm log_in log_out mcf.out

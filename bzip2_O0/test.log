@@ -1,0 +1,10 @@
+
+time ../original_binaries/bzip2_O0 ../CPU2006/401.bzip2/data/test/input/dryer.jpg 2 > log_in 
+time ../output_binaries/bzip2_O0.out ../CPU2006/401.bzip2/data/test/input/dryer.jpg 2 > log_out
+if diff log_in log_out >/dev/null 2>&1
+then 
+	printf "BZIP2_O0 \t \t Success \n "
+else
+	printf "BZIP2_O0 \t \t Failed \n "
+fi
+#rm log_in log_out

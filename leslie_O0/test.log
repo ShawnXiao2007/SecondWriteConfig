@@ -1,0 +1,13 @@
+mkdir temp
+cd temp
+time ../../original_binaries/leslie_O0 < ../../CPU2006/437.leslie3d/data/test/input/leslie3d.in  > log_in
+time ../../output_binaries/leslie_O0.out < ../../CPU2006/437.leslie3d/data/test/input/leslie3d.in  > log_out
+if diff log_in log_out >/dev/null 2>&1
+then 
+	printf "LESLIE_O0 \t \t Success \n "
+else
+	printf "LESLIE_O0 \t \t Failed \n "
+fi
+rm log_in log_out
+cd ../
+rm -rf temp

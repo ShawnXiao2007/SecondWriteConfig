@@ -1,0 +1,10 @@
+
+time ../original_binaries/lbm_O0 20 reference.dat 0 1 ../CPU2006/470.lbm/data/test/input/100_100_130_cf_a.of > log_in 
+time ../output_binaries/lbm_O0.out 20 reference.dat 0 1 ../CPU2006/470.lbm/data/test/input/100_100_130_cf_a.of > log_out
+if diff log_in log_out >/dev/null 2>&1
+then 
+	printf "LBM_O0 \t \t Success \n "
+else
+	printf "LBM_O0 \t \t Failed \n "
+fi
+rm log_in log_out

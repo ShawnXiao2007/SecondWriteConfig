@@ -1,0 +1,28 @@
+strip ../original_binaries/namd_O0 -o namd.444.O0_stripped_namd_O0
+llc-3.0 -O2 -mattr=-sse -regalloc=greedy   -march=x86 namd_O0.bc -o namd_O0.s
+gcc -g -c -O1  -m32 namd_O0.s -o namd_O0.o
+objcopy --redefine-sym sigaction=sigaction_local namd_O0.o
+objcopy --redefine-sym signal=signal_local namd_O0.o
+python ../../scripts/update_symbol_names.py --prefix= namd_O0.o
+gcc -g -c -O1  -m32 namd_O0_osegs.s -c -o namd_O0_osegs.s.o
+gcc  -m32 -shared -Wl,-soname,namd_O0_fake_relocs -o namd_O0_fake_relocs.so namd_O0_fake_relocs.c
+sed 's#"\(.*addrs[.]txt\)"#"namd_O0_\1"#' ../../callbacks/addr_map.cpp  > namd_O0_addr_map.cpp
+sed 's#"\(.*addrs[.]txt\)"#"namd_O0_\1"#' ../../callbacks/page_perms.cpp  > namd_O0_page_perms.cpp
+g++  -c -O1  -m32 namd_O0_addr_map.cpp -c -o namd_O0_addr_map.cpp.o -I ../../callbacks -I . 
+g++  -c -O1  -m32 namd_O0_page_perms.cpp -c -o namd_O0_page_perms.cpp.o -I ../../callbacks -I . 
+g++  -c -O1  -m32 namd_O0_cbstubs.s -c -o namd_O0_cbstubs.s.o
+python ../../scripts/update_asm.py namd_O0_ext_cbstubs.s
+g++  -c -O1  -m32 namd_O0_ext_cbstubs.s -c -o namd_O0_ext_cbstubs.s.o
+python ../../scripts/update_symbol_names.py --prefix= namd_O0_ext_cbstubs.s.o
+gcc -g -c -O1  -m32  ../../callbacks/segfault_handler_linux.c -I ../../callbacks -I . -o namd_O0_segfault_handler.c.o
+sed 's#  INCLUDE_STUBS()#  INCLUDE namd_O0_cbstubs.ld\n  INCLUDE namd_O0_redirect.ld\n#' ../../link/elf32.ld > namd_O0_base.ld
+sed -i 's#  INCLUDE_ORIG_BSS_SECTION()#  INCLUDE namd_O0_osegs_bss_sec.ld#' namd_O0_base.ld
+sed -i 's#  INCLUDE_ORIG_BSS_ADDR()#  INCLUDE namd_O0_osegs_bss_addr.ld#' namd_O0_base.ld
+sed -i 's#  INCLUDE_ORIG_DATA_TEXT()#  INCLUDE namd_O0_osegs.ld#' namd_O0_base.ld
+gcc -g -rdynamic  namd_O0.o -o ../output_binaries/namd_O0.out namd_O0_osegs.s.o  -Xlinker --check-sections namd_O0_addr_map.cpp.o namd_O0_page_perms.cpp.o namd_O0_segfault_handler.c.o namd_O0_cbstubs.s.o namd_O0_ext_cbstubs.s.o -m32 -lm  -Xlinker -Tnamd_O0_base.ld  ../lib/unknown_external_call.a ../lib/RuntimeEngineWorkhorse.a ../lib/CheckpointingWorkhorse.a namd_O0_fake_relocs.so -nostdlib -lc -lm -lgcc -lstdc++ -lgfortran ../lib/libgfortran-4.6.so -l:libgfortran.so.3 -lrt -L /usr/lib/i386-linux-gnu/  -lgfortran -lpthread 
+python ../../scripts/elf_relocations.py namd.444.O0_stripped_namd_O0 ../output_binaries/namd_O0.out
+rm *.o *.cpp
+rm namd_O0_base.ld
+rm namd_O0_fake_relocs.so
+rm namd_O0.s
+rm namd.444.O0_stripped_namd_O0

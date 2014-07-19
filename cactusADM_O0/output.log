@@ -1,0 +1,30 @@
+strip ../original_binaries/cactusADM_O0 -o cactusADM.436.O0_stripped_cactusADM.436
+llc-3.0 -O2 -mattr=-sse -regalloc=greedy   -march=x86 cactusADM.436.bc -o cactusADM.436.s
+gcc -g -c -O1  -m32 cactusADM.436.s -o cactusADM.436.o
+objcopy --redefine-sym sigaction=sigaction_local cactusADM.436.o
+objcopy --redefine-sym signal=signal_local cactusADM.436.o
+python ../../scripts/update_symbol_names.py --prefix= cactusADM.436.o
+gcc -g -c -O1  -m32 cactusADM.436_osegs.s -c -o cactusADM.436_osegs.s.o
+gcc -g -c -O1  -m32 cactusADM.436_icthunk.s -c -o cactusADM.436_icthunk.s.o
+gcc  -m32 -shared -Wl,-soname,cactusADM.436_fake_relocs -o cactusADM.436_fake_relocs.so cactusADM.436_fake_relocs.c
+sed 's#"\(.*addrs[.]txt\)"#"cactusADM.436_\1"#' ../../callbacks/addr_map.cpp  > cactusADM.436_addr_map.cpp
+sed 's#"\(.*addrs[.]txt\)"#"cactusADM.436_\1"#' ../../callbacks/page_perms.cpp  > cactusADM.436_page_perms.cpp
+g++  -c -O1  -m32 cactusADM.436_addr_map.cpp -c -o cactusADM.436_addr_map.cpp.o -I ../../callbacks -I . 
+g++  -c -O1  -m32 cactusADM.436_page_perms.cpp -c -o cactusADM.436_page_perms.cpp.o -I ../../callbacks -I . 
+g++  -c -O1  -m32 cactusADM.436_cbstubs.s -c -o cactusADM.436_cbstubs.s.o
+python ../../scripts/update_asm.py cactusADM.436_ext_cbstubs.s
+g++  -c -O1  -m32 cactusADM.436_ext_cbstubs.s -c -o cactusADM.436_ext_cbstubs.s.o
+python ../../scripts/update_symbol_names.py --prefix= cactusADM.436_ext_cbstubs.s.o
+gcc -g -c -O1  -m32  ../../callbacks/segfault_handler_linux.c -I ../../callbacks -I . -o cactusADM.436_segfault_handler.c.o
+sed 's#  INCLUDE_STUBS()#  INCLUDE cactusADM.436_cbstubs.ld\n  INCLUDE cactusADM.436_redirect.ld\n#' ../../link/elf32.ld > cactusADM.436_base.ld
+sed -i 's#  INCLUDE_ORIG_BSS_SECTION()#  INCLUDE cactusADM.436_osegs_bss_sec.ld#' cactusADM.436_base.ld
+sed -i 's#  INCLUDE_ORIG_BSS_ADDR()#  INCLUDE cactusADM.436_osegs_bss_addr.ld#' cactusADM.436_base.ld
+sed -i 's#  INCLUDE_ORIG_DATA_TEXT()#  INCLUDE cactusADM.436_osegs.ld#' cactusADM.436_base.ld
+gcc -g -rdynamic  cactusADM.436.o -o ../output_binaries/cactusADM_O0.out cactusADM.436_osegs.s.o  -Xlinker --check-sections cactusADM.436_addr_map.cpp.o cactusADM.436_page_perms.cpp.o cactusADM.436_segfault_handler.c.o cactusADM.436_cbstubs.s.o cactusADM.436_ext_cbstubs.s.o cactusADM.436_icthunk.s.o -m32 -lm  -Xlinker -TcactusADM.436_base.ld  ../lib/unknown_external_call.a ../lib/RuntimeEngineWorkhorse.a ../lib/CheckpointingWorkhorse.a cactusADM.436_fake_relocs.so -nostdlib -lc -lm -lgcc -lstdc++ -lgfortran ../lib/libgfortran-4.6.so -l:libgfortran.so.3 -lrt -L /usr/lib/i386-linux-gnu/  -lgfortran -lpthread
+python ../../scripts/elf_relocations.py cactusADM.436.O0_stripped_cactusADM.436 ../output_binaries/cactusADM_O0.out
+rm *.o *.cpp
+rm cactusADM.436_base.ld
+rm cactusADM.436_fake_relocs.so
+rm cactusADM.436.s
+rm cactusADM.436.O0_stripped_cactusADM.436
+

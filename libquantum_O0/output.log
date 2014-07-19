@@ -1,0 +1,30 @@
+strip ../original_binaries/libquantum_O0 -o libquantum_O0_stripped_libquantum_O0
+llc-3.0 -O2 -mattr=-sse -regalloc=greedy   -march=x86 libquantum_O0.bc -o libquantum_O0.s
+gcc -g -c -O1  -m32 libquantum_O0.s -o libquantum_O0.o
+objcopy --redefine-sym sigaction=sigaction_local libquantum_O0.o
+objcopy --redefine-sym signal=signal_local libquantum_O0.o
+python ../../scripts/update_symbol_names.py --prefix= libquantum_O0.o
+gcc -g -c -O1  -m32 libquantum_O0_osegs.s -c -o libquantum_O0_osegs.s.o
+gcc -g -c -O1  -m32 libquantum_O0_icthunk.s -c -o libquantum_O0_icthunk.s.o
+gcc  -m32 -shared -Wl,-soname,libquantum_O0_fake_relocs -o libquantum_O0_fake_relocs.so libquantum_O0_fake_relocs.c
+sed 's#"\(.*addrs[.]txt\)"#"libquantum_O0_\1"#' ../../callbacks/addr_map.cpp  > libquantum_O0_addr_map.cpp
+sed 's#"\(.*addrs[.]txt\)"#"libquantum_O0_\1"#' ../../callbacks/page_perms.cpp  > libquantum_O0_page_perms.cpp
+g++  -c -O1  -m32 libquantum_O0_addr_map.cpp -c -o libquantum_O0_addr_map.cpp.o -I ../../callbacks -I . 
+g++  -c -O1  -m32 libquantum_O0_page_perms.cpp -c -o libquantum_O0_page_perms.cpp.o -I ../../callbacks -I . 
+g++  -c -O1  -m32 libquantum_O0_cbstubs.s -c -o libquantum_O0_cbstubs.s.o
+python ../../scripts/update_asm.py libquantum_O0_ext_cbstubs.s
+g++  -c -O1  -m32 libquantum_O0_ext_cbstubs.s -c -o libquantum_O0_ext_cbstubs.s.o
+python ../../scripts/update_symbol_names.py --prefix= libquantum_O0_ext_cbstubs.s.o
+gcc -g -c -O1  -m32  ../../callbacks/segfault_handler_linux.c -I ../../callbacks -I . -o libquantum_O0_segfault_handler.c.o
+sed 's#  INCLUDE_STUBS()#  INCLUDE libquantum_O0_cbstubs.ld\n  INCLUDE libquantum_O0_redirect.ld\n#' ../../link/elf32.ld > libquantum_O0_base.ld
+sed -i 's#  INCLUDE_ORIG_BSS_SECTION()#  INCLUDE libquantum_O0_osegs_bss_sec.ld#' libquantum_O0_base.ld
+sed -i 's#  INCLUDE_ORIG_BSS_ADDR()#  INCLUDE libquantum_O0_osegs_bss_addr.ld#' libquantum_O0_base.ld
+sed -i 's#  INCLUDE_ORIG_DATA_TEXT()#  INCLUDE libquantum_O0_osegs.ld#' libquantum_O0_base.ld
+gcc -g -rdynamic  libquantum_O0.o -o ../output_binaries/libquantum_O0.out libquantum_O0_osegs.s.o  -Xlinker --check-sections libquantum_O0_addr_map.cpp.o libquantum_O0_page_perms.cpp.o libquantum_O0_segfault_handler.c.o libquantum_O0_cbstubs.s.o libquantum_O0_ext_cbstubs.s.o libquantum_O0_icthunk.s.o -m32 -lm  -Xlinker -Tlibquantum_O0_base.ld  ../lib/unknown_external_call.a ../lib/RuntimeEngineWorkhorse.a ../lib/CheckpointingWorkhorse.a libquantum_O0_fake_relocs.so -nostdlib -lc -lm -lgcc -lstdc++ -lgfortran ../lib/libgfortran-4.6.so -l:libgfortran.so.3 -lrt -L. -L /usr/lib/i386-linux-gnu/ -lprintf_wrapper.linux.i386  -lgfortran -lpthread
+python ../../scripts/elf_relocations.py libquantum_O0_stripped_libquantum_O0 ../output_binaries/libquantum_O0.out
+rm *.o *.cpp
+rm libquantum_O0_base.ld
+rm libquantum_O0_fake_relocs.so
+rm libquantum_O0.s
+rm libquantum_O0_stripped_libquantum_O0
+

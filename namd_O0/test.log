@@ -1,0 +1,16 @@
+mkdir temp
+cd temp
+cp ../../CPU2006/444.namd/data/all/input/* .
+time ../../original_binaries/namd_O0 --input namd.input --iterations 1 --output namd.out  > log_in
+mv namd.out log_in
+time ../../output_binaries/namd_O0.out --input namd.input --iterations 1 --output namd.out  > log_out
+mv namd.out log_out
+if ../../../tools/fpcmp -a 1e-16 log_in log_out >/dev/null 2>&1
+then 
+	printf "NAMD_O0 \t \t Success \n "
+else
+	printf "NAMD_O0 \t \t Failed \n "
+fi
+rm log_in log_out
+cd ../
+rm -rf temp

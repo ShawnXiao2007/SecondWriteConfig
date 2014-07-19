@@ -1,0 +1,14 @@
+mkdir temp
+cd temp
+cp ../../CPU2006/450.soplex/data/test/input/* .
+time ../../original_binaries/soplex_O0 -m10000 test.mps > log_in 2> /dev/null_orig
+time ../../output_binaries/soplex_O0.out -m10000 test.mps > log_out 2> /dev/null_inst
+if diff log_in log_out >/dev/null 2>&1
+then 
+	printf "SOPLEX_O0 \t \t Success \n "
+else
+	printf "SOPLEX_O0 \t \t Failed \n "
+fi
+rm log_in log_out
+cd ../
+rm -rf temp
