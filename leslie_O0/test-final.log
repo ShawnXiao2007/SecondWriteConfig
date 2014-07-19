@@ -1,0 +1,30 @@
+mkdir temp
+cd temp
+
+CYCLES=2
+starttime=$(date +%s)
+for((i=0; i<$CYCLES;))
+do
+	../../original_binaries/leslie_O0 < ../../CPU2006/437.leslie3d/data/test/input/leslie3d.in  > log_in
+	i=$(expr $i + 1)
+done
+endtime1=$(date +%s)
+
+for((i=0; i<$CYCLES;))
+do
+	../../output_binaries/leslie_O0.out < ../../CPU2006/437.leslie3d/data/test/input/leslie3d.in  > log_out
+	i=$(expr $i + 1)
+done
+
+endtime2=$(date +%s)
+echo "leslie_O0 original $((endtime1-starttime)) s; instrumented $((endtime2-endtime1)) s"
+
+if diff log_in log_out >/dev/null 2>&1
+then 
+	printf "LESLIE_O0 \t \t Success \n "
+else
+	printf "LESLIE_O0 \t \t Failed \n "
+fi
+rm log_in log_out
+cd ../
+rm -rf temp

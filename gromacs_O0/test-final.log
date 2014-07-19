@@ -1,0 +1,16 @@
+mkdir temp
+cd temp
+cp ../../CPU2006/435.gromacs/data/test/input/* .
+time ../../original_binaries/gromacs_O0 -nice 0 -deffnm gromacs > log_in
+mv gromacs.out log_in
+time ../../output_binaries/gromacs_O0.out -nice 0 -deffnm gromacs > log_out
+mv gromacs.out log_out
+if ../../../tools/fpcmp -r 1e-5 log_in log_out >/dev/null 2>&1
+then 
+	printf "GROMACS_O0 \t \t Success \n "
+else
+	printf "GROMACS_O0 \t \t Failed \n "
+fi
+rm log_in log_out
+cd ../
+rm -rf temp

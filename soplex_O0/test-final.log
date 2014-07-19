@@ -1,0 +1,31 @@
+mkdir temp
+cd temp
+cp ../../CPU2006/450.soplex/data/test/input/* .
+
+CYCLES=2000
+starttime=$(date +%s)
+for((i=0; i<$CYCLES;))
+do
+	../../original_binaries/soplex_O0 -m10000 test.mps > log_in 2> /dev/null_orig
+	i=$(expr $i + 1)
+done
+endtime1=$(date +%s)
+
+for((i=0; i<$CYCLES;))
+do
+	../../output_binaries/soplex_O0.out -m10000 test.mps > log_out 2> /dev/null_inst
+	i=$(expr $i + 1)
+done
+
+endtime2=$(date +%s)
+echo "soplex original $((endtime1-starttime)) s; instrumented $((endtime2-endtime1)) s"
+
+if diff log_in log_out >/dev/null 2>&1
+then 
+	printf "SOPLEX_O0 \t \t Success \n "
+else
+	printf "SOPLEX_O0 \t \t Failed \n "
+fi
+rm log_in log_out
+cd ../
+rm -rf temp

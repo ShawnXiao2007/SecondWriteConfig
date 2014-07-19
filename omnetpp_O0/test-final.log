@@ -1,0 +1,31 @@
+mkdir temp
+cd temp
+cp ../../CPU2006/471.omnetpp/data/test/input/* .
+
+CYCLES=100
+starttime=$(date +%s)
+for((i=0; i<$CYCLES;))
+do
+	../../original_binaries/omnetpp_O0 > log_in
+	i=$(expr $i + 1)
+done
+endtime1=$(date +%s)
+
+for((i=0; i<$CYCLES;))
+do
+	../../output_binaries/omnetpp_O0.out > log_out
+	i=$(expr $i + 1)
+done
+
+endtime2=$(date +%s)
+echo "omnetpp original $((endtime1-starttime)) s; instrumented $((endtime2-endtime1)) s"
+
+if diff log_in log_out >/dev/null 2>&1
+then 
+	printf "OMNETPP_O0 \t \t Success \n "
+else
+	printf "OMNETPP_O0 \t \t Failed \n "
+fi
+rm log_in log_out
+cd ../
+rm -rf temp

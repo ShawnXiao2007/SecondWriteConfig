@@ -1,0 +1,28 @@
+mkdir temp
+cd temp
+CYCLES=15
+starttime=$(date +%s)
+for((i=0; i<$CYCLES;))
+do
+	../../original_binaries/sjeng_O0  ../../CPU2006/458.sjeng/data/test/input/test.txt > log_in
+	i=$(expr $i + 1)
+done
+endtime1=$(date +%s)
+
+for((i=0; i<$CYCLES;))
+do
+	../../output_binaries/sjeng_O0.out  ../..//CPU2006/458.sjeng/data/test/input/test.txt > log_out
+	i=$(expr $i + 1)
+done
+
+endtime2=$(date +%s)
+echo "sjeng original $((endtime1-starttime)) s; instrumented $((endtime2-endtime1)) s"
+if diff log_in log_out >/dev/null 2>&1
+then 
+	printf "SJENG_O0 \t \t Success \n "
+else
+	printf "SJENG_O0 \t \t Failed \n "
+fi
+rm log_in log_out
+cd ../
+rm -rf temp 

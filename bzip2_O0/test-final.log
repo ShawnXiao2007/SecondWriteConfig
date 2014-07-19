@@ -1,0 +1,25 @@
+
+CYCLES=9
+starttime=$(date +%s)
+for((i=0; i<$CYCLES;))
+do
+	../original_binaries/bzip2_O0 ../CPU2006/401.bzip2/data/test/input/dryer.jpg 2 > log_in 
+	i=$(expr $i + 1)
+done
+endtime1=$(date +%s)
+
+for((i=0; i<$CYCLES;))
+do
+	../output_binaries/bzip2_O0.out ../CPU2006/401.bzip2/data/test/input/dryer.jpg 2 > log_out
+	i=$(expr $i + 1)
+done
+
+endtime2=$(date +%s)
+echo "bzip2 original $((endtime1-starttime)) s; instrumented $((endtime2-endtime1)) s"
+if diff log_in log_out >/dev/null 2>&1
+then 
+	printf "BZIP2_O0 \t \t Success \n "
+else
+	printf "BZIP2_O0 \t \t Failed \n "
+fi
+#rm log_in log_out
