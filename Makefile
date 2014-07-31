@@ -6,7 +6,7 @@
 	xalancbmk_O3.out milc_O0.out milc_O3.out sphinx3_O0.out sphinx3_O3.out bwaves_O0.out bwaves_O3.out \
 	soplex_O0.out soplex_O3.out zeusmp_O0.out zeusmp_O3.out leslie_O0.out leslie_O3.out
 INITDIR=/home/jun/straight-DTA/straightDFA
-SUBTESTS :=leslie_O0.out 
+SUBTESTS := bzip2_O0.out lbm_O0.out mcf_O0.out sjeng_O0.out h264ref_O0.out libquantum_O0 cactusADM_O0.out omnetpp_O0.out gromacs_O0.out namd_O0.out soplex_O0  leslie_O0.out 
 
 all: $(SUBTESTS)
 
@@ -144,8 +144,8 @@ leslie_O3.out:
 	xalancbmk_O3.test lynx.test sphinx3_O0.test sphinx3_O3.test bwaves_O0.test bwaves_O3.test \
 	zeusmp_O0.test zeusmp_O3.test leslie_O0.test leslie_O3.test soplex_O0.test soplex_O3.test
 
-#SUBTESTS1 := bzip2_O0.test lbm_O0.test mcf_O0.test h264ref_O0.test libquantum_O0.test cactusADM_O0.test gromacs_O0.test namd_O.test0 soplex_O0.test leslie_O0.test
-SUBTESTS1 :=  namd_O0.test soplex_O0.test leslie_O0.test
+#SUBTESTS1 := bzip2_O0.test lbm_O0.test mcf_O0.test sjeng_O0.test h264ref_O0.test libquantum_O0.test cactusADM_O0.test omnetpp_O0.test soplex_O0.test leslie_O0.test
+SUBTESTS1 :=  soplex_O0.test leslie_O0.test
 
 all_test: $(SUBTESTS1)
 
@@ -197,7 +197,6 @@ cactusADM_O3.test:
 	@cd cactusADM_O3; ./test.log; cd ../; done
 omnetpp_O0.test: 
 	@cd omnetpp_O0; ./test.log; cd ../; done
-	@./clean.sh omnetpp_O0
 omnetpp_O3.test: 
 	@cd omnetpp_O3; ./test.log; cd ../; done
 gromacs_O0.test:
